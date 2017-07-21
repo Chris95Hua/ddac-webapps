@@ -16,7 +16,7 @@
 
 		<title><?= Config::get('site_name')." | ".$page->data()[Page::COL_TITLE] ?></title>
 
-		<base href="<?= URL ?>/">
+		<base href="<?= BASE_URL ?>/">
 
 		<!-- Foundation -->
 		<link rel="stylesheet" type="text/css" href="css/app.css" />

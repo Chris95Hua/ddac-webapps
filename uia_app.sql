@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 21, 2017 at 11:57 PM
+-- Generation Time: Jul 22, 2017 at 12:18 AM
 -- Server version: 10.1.8-MariaDB
 -- PHP Version: 5.6.14
 
@@ -75,9 +75,11 @@ CREATE TABLE `page` (
 
 INSERT INTO `page` (`page_id`, `page_title`, `page_slug`) VALUES
 (1, 'Home', 'home'),
-(2, 'Sign In', 'singin'),
-(3, 'Sign Up', 'signup'),
-(4, 'Booking', 'booking');
+(2, 'Error 404', 'err404'),
+(3, 'Error 403', 'err403'),
+(4, 'Sign In', 'signin'),
+(5, 'Sign up', 'signup'),
+(6, 'Booking', 'booking');
 
 -- --------------------------------------------------------
 
@@ -99,10 +101,16 @@ INSERT INTO `page_permission` (`permission_id`, `page_id`, `role_id`) VALUES
 (1, 1, 1),
 (2, 1, 2),
 (3, 1, 3),
-(4, 2, 3),
-(5, 3, 3),
-(6, 4, 1),
-(7, 4, 2);
+(4, 2, 1),
+(5, 2, 2),
+(6, 2, 3),
+(7, 3, 1),
+(8, 3, 2),
+(9, 3, 3),
+(10, 4, 3),
+(11, 5, 3),
+(12, 6, 1),
+(13, 6, 2);
 
 -- --------------------------------------------------------
 
@@ -196,12 +204,12 @@ ALTER TABLE `user_session`
 -- AUTO_INCREMENT for table `page`
 --
 ALTER TABLE `page`
-  MODIFY `page_id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `page_id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `page_permission`
 --
 ALTER TABLE `page_permission`
-  MODIFY `permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT for table `user`
 --

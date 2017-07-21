@@ -6,7 +6,7 @@
 // MODAL 		: modal directory
 // VIEW 		: view directory
 // CONTROLLER	: controller directory
-if(!defined('BASE_URL')) define('URL', 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']));
+if(!defined('BASE_URL')) define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']));
 if(!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 if(!defined('ROOT')) define('ROOT', realpath(__DIR__.'/../..'));
 if(!defined('MODAL')) define('MODAL', ROOT.DS.'modal');

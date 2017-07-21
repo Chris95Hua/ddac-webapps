@@ -1,8 +1,8 @@
-<?php echo "<h1>" . $page->data()->title . "</h1>"; ?>
+<?php echo "<h1>" . $page->data()[Page::COL_TITLE] . "</h1>"; ?>
 
 <br>
-<div class="circle smallcircle circleright"><h1>THE PAGE YOU<br/>TRIED TO OPEN</h1></div>
-<div class="circle bigcircle"><h1>PAGES THAT EXIST</h1></div>
+<div class="circle small-circle circle-right"><h1>THE PAGE YOU<br/>TRIED TO OPEN</h1></div>
+<div class="circle big-circle"><h1>PAGES THAT EXIST</h1></div>
 <div style="clear:both"></div>
 <br>
 <h1 style="color:#000">It looks like the page you are looking for doesn't exist.
