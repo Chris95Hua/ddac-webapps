@@ -18,8 +18,8 @@ class MySQLConn {
 
 		$opt = [
 		    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-		    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-		    PDO::ATTR_EMULATE_PREPARES   => false
+		    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		    //PDO::ATTR_EMULATE_PREPARES   => false
 		];
 
 		// TODO: need a better error handler if unable to establish connection
@@ -74,7 +74,7 @@ class MySQLConn {
 	* @return MySQLConn                  Instance of MySQLConn
 	* @example query("SELECT * FROM table"); query("SELECT * FROM table");
 	*
-	* NOTE: Pair this function with fetchAll(), fetch(), error(),
+	* NOTE: Pair this function with fetchAll(), fetch(), hasError(),
 	* 		count(), lastInsertId()
 	*/
 	public function query($query, $fields = array()) {
@@ -86,7 +86,7 @@ class MySQLConn {
 					$this->_conn->bindValue(":{$name}", $value, $this->getParamType($value));
 				}
 			}
-
+			
 			if($this->_conn->execute()) {
 				$this->_count = $this->_conn->rowCount();
 				$this->_lastID = $this->_pdo->lastInsertID();
@@ -145,15 +145,19 @@ class MySQLConn {
 	* @param array(string)  $where       Conditions (optional)
 	* @return MySQLConn/null             Instance of MySQLConn if query is valid, else null
 	*/
-	private function action($action, $table, array $where) {
+	private function action($action, $table, array $where, $format = "") {
 		if($this->isConditionValid($where)) {
 			$field = $where[0];
 			$value = $where[2];
 			$operator = $where[1];
 
-			$query = "{$action} {$table} WHERE {$field} {$operator} :{$field}";
+			if(strlen($format) > 0) {
+				$format = ' ' . $format;
+			}
 
-			if(!$this->query($query, array($field => $value))->error()) {
+			$query = "{$action} {$table} WHERE {$field} {$operator} :{$field}".$format;
+
+			if(!$this->query($query, array($field => $value))->hasError()) {
 				return $this;
 			}
 		}
@@ -175,8 +179,7 @@ class MySQLConn {
 			$keys = array_keys($fields);
 
 			$sql = "INSERT INTO {$table} (".implode(', ', $keys).") VALUES (:".implode(', :', $keys).")";
-
-			return !$this->query($sql, $fields)->error();
+			return !$this->query($sql, $fields)->hasError();
 		}
 
 		return false;
@@ -218,22 +221,27 @@ class MySQLConn {
 	* @param string         $table       Name of table
 	* @param array(string)  $columns     Columns to be returned (use "*" to select everything)
 	* @param array(string)  $where       Conditions (optional)
+	* @param string  		$format  	 Formatting (optional)
 	* @return MySQLConn                  Instance of MySQLConn
 	* @example select("user", array("*"), array("status", "=", "active"));
 	*
-	* NOTE: Pair this function with fetchAll(), fetch(), error(),
+	* NOTE: Pair this function with fetchAll(), fetch(), hasError(),
 	* 		count(), lastInsertId()
 	*/
-	public function select($table, array $columns, $where = array()) {
+	public function select($table, array $columns, $where = array(), $format = "") {
+		if(strlen($format) > 0) {
+			$format = ' ' . $format;
+		}
+
 		if(empty($where)) {
-			$query = "SELECT ".$this->selectedFields($columns)." FROM {$table}";
+			$query = "SELECT ".$this->selectedFields($columns)." FROM {$table}" . $format;
 
 			return $this->query($query);
 		}
 		else {
 			$query = "SELECT ".$this->selectedFields($columns)." FROM";
 
-			return $this->action($query, $table, $where);
+			return $this->action($query, $table, $where, $format);
 		}
 	}
 
@@ -242,15 +250,20 @@ class MySQLConn {
 	* Conditional delete
 	*
 	* @param string         $table       Name of table
-	* @param array(string)  $where       Conditions
+	* @param array(string)  $where       Conditions (optional)
 	* @return MySQLConn                  Instance of MySQLConn
 	* @example delete("user", array("status", "=", "fired"));
 	*
-	* NOTE: Pair this function with fetchAll(), fetch(), error(),
+	* NOTE: Pair this function with fetchAll(), fetch(), hasError(),
 	* 		count(), lastInsertId()
 	*/
 	public function delete($table, $where = array()) {
-		return $this->action('DELETE FROM', $table, $where);
+		if(empty($where)) {
+			return $this->query("DELETE FROM {$table}");
+		}
+		else {
+			return $this->action('DELETE FROM', $table, $where);
+		}
 	}
 
 
@@ -262,8 +275,7 @@ class MySQLConn {
 	* @return MySQLConn                  Instance of MySQLConn
 	* @example callSproc("get_user_by_role", array("role" => "manager"));
 	*
-	* NOTE: Pair this function with fetchAll(), fetch(), error(),
-	* 		count(), lastInsertId()
+	* NOTE: Pair this function with hasError(), count()
 	*/
 	public function callSproc($proc, $params = array()) {
 		$paramValues = "";
@@ -307,7 +319,7 @@ class MySQLConn {
 	*
 	* @return boolean                    True if there's no error, else false
 	*/
-	public function error() {
+	public function hasError() {
 		return $this->_error;
 	}
 

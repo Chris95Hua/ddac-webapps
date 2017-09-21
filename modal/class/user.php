@@ -5,66 +5,74 @@ class User {
 	const USER_TABLE = 'user';
 	const SESSION_TABLE = 'user_session';
 	const COL_USER_ID = 'user_id';
-	const COL_USERNAME = 'username';
+	const COL_NAME = 'full_name';
+	const COL_BIRTHDATE = 'birth_date';
+	const COL_EMAIL = 'email';
 	const COL_PASSWORD = 'password';
 	const COL_SALT = 'salt';
+	const COL_DATEJOINED = 'date_joined';
+	const COL_ROLE_ID = 'role_id';
 	const COL_SESSION_ID = 'session_id';
 	const COL_HASH = 'hash';
 
+	private static $_instance = NULL;
 	private $_db, $_data;
 
 
 	/**
 	* Establish database connection
 	*/
-	public function __construct() {
+	protected function __construct() {
 		$this->_db = MySQLConn::getInstance();
+	}
+
+	public static function getInstance() {
+		if(self::$_instance === NULL)
+			self::$_instance = new User();
+
+		return self::$_instance;
 	}
 
 
 	/**
 	* Create and start user session
 	*
-	* @param string         $username    User username
+	* @param string         $email    	 User email
 	* @param string         $password    Account password
 	* @param boolean        $remember    Store session for a limited time if true
 	* @return boolean                    True if success, else false
 	*/
-	public function login($username = null, $password = null, $remember = false) {
-		if(!$username && !$password && $this->isLoggedIn()) {
-			$_SESSION['ID'] = $this->data()->userID;
-			$_SESSION['role'] = $this->data()->role;
-		}
-		else {
-			if($this->find($username, true)) {
-				if($this->data()->password === Hash::make($password, $this->data()->salt)) {
-					$_SESSION['ID'] = $this->data()->userID;
-					$_SESSION['role'] = $this->data()->role;
+	public function login($email, $password, $remember = false) {
+		if($this->find($email, true)) {
+			if($this->_data[self::COL_PASSWORD] === Hash::make($password, $this->_data[self::COL_SALT])) {
+				$_SESSION['ID'] = $this->_data[self::COL_USER_ID];
+				$_SESSION['role'] = $this->_data[self::COL_ROLE_ID];
 
-					if($remember) {
-						$hashCheck = $this->_db->select(self::SESSION_TABLE, array(self::COL_USER_ID, '=', $_SESSION['ID']));
+				if($remember) {
+					$hashCheck = $this->_db->select(self::SESSION_TABLE, array(self::COL_USER_ID, '=', $_SESSION['ID']));
 
-						if(!$hashCheck->count()) {
-							$hash = Hash::unique();
-							$this->_db->insert(self::SESSION_TABLE, array(
-								self::COL_USER_ID => $this->data()->userID,
-								self::COL_HASH => $hash
-							));
-						}
-						else {
-							$hash = $hashCheck->fetch()->hash;
-						}
-
-						Cookie::put(Config::get('cookie_name'), $hash, Config::get('cookie_expiry'));
+					if(!$hashCheck->count()) {
+						$hash = Hash::unique();
+						$this->_db->insert(self::SESSION_TABLE, array(
+							self::COL_USER_ID => $this->_data[self::COL_USER_ID],
+							self::COL_HASH => $hash
+						));
 					}
-					// TODO: populate data here
+					else {
+						$hash = $hashCheck->fetch()->hash;
+					}
 
-					return true;
+					Cookie::put(Config::get('cookie_name'), $hash, Config::get('cookie_expiry'));
 				}
+
+				return 0;
+			}
+			else {
+				return 1;
 			}
 		}
 
-		return false;
+		return 2;
 	}
 
 
@@ -72,7 +80,7 @@ class User {
 	* Remove current user session
 	*/
 	public function logout() {
-		$this->_db->delete('user_session', array(self::COL_USER_ID,'=',$this->_data->userID));
+		$this->_db->delete(self::SESSION_TABLE, array(self::COL_USER_ID,'=',$this->_data[self::COL_USER_ID]));
 		$this->_data = null;
 		Cookie::delete(Config::get('cookie_name'));
 	}
@@ -86,12 +94,10 @@ class User {
 	*/
 	public function getAllUsers($asc = true) {
 		$table = self::USER_TABLE;
-		$column = self::COL_USERNAME;
+		$column = self::COL_NAME;
 		$order = $asc ? "ASC" : "DESC";
 
-		$users = $this->_db->query("SELECT * FROM {$table} ORDER BY {$column} {$order}")->fetchAll();
-
-		return $users;
+		return $this->_db->query("SELECT * FROM {$table} ORDER BY {$column} {$order}")->fetchAll();
 	}
 
 
@@ -100,10 +106,13 @@ class User {
 	*
 	* @param array(assoc)   $fields      User fields and data
 	*/
-	public function insert($fields = array()) {
+	public function create($fields = array()) {
 		if(!$this->_db->insert(self::USER_TABLE, $fields)) {
-			throw new Exception('There was a problem creating an account');
+			return 1;
+			//throw new Exception('There was a problem creating an account')
 		}
+
+		return 0;
 	}
 
 	/**
@@ -128,7 +137,7 @@ class User {
 	public function delete($key) {
 		// TODO: prevent user from deleting himself/herself
 		if($key != $_SESSION['ID']) {
-			$field = (is_numeric($key)) ? self::COL_USER_ID : self::COL_USERNAME;
+			$field = (is_numeric($key)) ? self::COL_USER_ID : self::COL_EMAIL;
 
 			$this->_db->delete(self::USER_TABLE, array($field, '=', $key));
 			return true;
@@ -147,8 +156,9 @@ class User {
 	*/
 	public function find($key, $get = false) {
 		// TODO: use MemcacheD here
-		$field = (is_numeric($key)) ? self::COL_USER_ID : self::COL_USERNAME;
-		$user = $this->_db->select(self::USER_TABLE, array($field, '=', $key));
+		$field = (is_numeric($key)) ? self::COL_USER_ID : self::COL_EMAIL;
+
+		$user = $this->_db->select(self::USER_TABLE, array(), array($field, '=', $key), "LIMIT 1");
 
 		if($user->count()) {
 			if($get) {

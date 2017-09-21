@@ -1,3 +1,9 @@
+<?php
+$user->logout();
+
+session_destroy();
+?>
+
 <?php echo "<h1>" . $page->data()[Page::COL_TITLE] . "</h1>"; ?>
 
 <br>

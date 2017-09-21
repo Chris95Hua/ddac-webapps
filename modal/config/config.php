@@ -21,6 +21,9 @@ class Config {
 		'time_format' => 'd/m/y',
 		'write_log' => false,		
 		
+		// project specific settings
+		'max_booking_display' => 5,
+
 		/**
 		* Database
 		*

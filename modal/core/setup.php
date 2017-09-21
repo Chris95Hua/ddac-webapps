@@ -6,7 +6,7 @@
 // MODAL 		: modal directory
 // VIEW 		: view directory
 // CONTROLLER	: controller directory
-if(!defined('BASE_URL')) define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']));
+if(!defined('BASE_URL')) define('BASE_URL', '://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']));
 if(!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 if(!defined('ROOT')) define('ROOT', realpath(__DIR__.'/../..'));
 if(!defined('MODAL')) define('MODAL', ROOT.DS.'modal');
@@ -33,18 +33,17 @@ spl_autoload_register(function($class) {
 Config::init();
  
 // Load basic classes
-$page = new Page();
-$user = new User();
+$page = Page::getInstance();
+$user = User::getInstance();
  
 // Auto login if cookie was found
 if(Cookie::exist(Config::get('cookie_name')) && !isset($_SESSION['ID'])) {
 	$hash = Cookie::get(Config::get('cookie_name'));
-	$hashCheck = MySQLConn::getInstance()->get('user_session', array('hash','=',$hash));
+	$hashCheck = MySQLConn::getInstance()->select(User::SESSION_TABLE, array(), array(User::COL_HASH, '=', $hash), "LIMIT 1");
 
 	if($hashCheck->count()) {
-		$user = new User($hashCheck->first()->userID);
-		
-		$user->login();
+		$user->find($hashCheck->data()[User::COL_USER_ID], true);
+		$user->login($user->data()[User::COL_EMAIL],$user->data()[User::COL_PASSWORD], true);
 	}
 }
 

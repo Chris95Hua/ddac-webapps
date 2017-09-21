@@ -1,7 +1,17 @@
 <footer id="footer">
-	<div class="container">
-		<div class="text-muted pull-right">&copy; 2016 SoftEngine Sdn Bhd.</div>
-		<div class="text-muted"><a href="#">About</a> &middot; <a href="#">Contact</a> &middot; 
-		<a href="#">Privacy</a> &middot; <a href="#">Terms</a></div>
-	</div>
+    <div class="row">
+        <div class="medium-6 columns">
+            <p class="footer-links">
+              <a href="#">About</a>
+              <a href="#">Contact</a>
+              <a href="#">Privacy</a>
+              <a href="#">Terms</a>
+            </p>
+        </div>
+        <div class="medium-6 columns">
+            <ul class="float-right">
+                <p class="copyright">&copy; 2017 Ukraine International Airlines. All rights reserved.</p>
+            </ul>
+        </div>
+    </div>
 </footer>

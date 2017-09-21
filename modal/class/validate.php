@@ -7,7 +7,7 @@ class Validate {
 	
 	//establish DB connection
 	public function __construct() {
-		$this->_db = DB::getInstance();
+		$this->_db = MySQLConn::getInstance();
 	}
 	
 	//check items based on rules

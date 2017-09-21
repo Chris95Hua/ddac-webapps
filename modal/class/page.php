@@ -7,13 +7,14 @@ class Page {
 	const COL_TITLE = 'page_title';
 	const COL_SLUG = 'page_slug';
 
+	private static $_instance = NULL;
 	private $_db, $_cache = false, $_pages = array();
 
 
 	/**
 	* Establish database connection and get available pages
 	*/
-	public function __construct($page = null) {
+	protected function __construct($page = null) {
 		$this->_db = MySQLConn::getInstance();
 /*
 
@@ -35,6 +36,13 @@ Ways to reduce database transaction/calls
 
 		$this->_pages = $this->_db->fetchAll();*/
 		// $this->_pages[index][col]
+	}
+
+	public static function getInstance() {
+		if(self::$_instance === NULL)
+			self::$_instance = new Page();
+
+		return self::$_instance;
 	}
 
 
