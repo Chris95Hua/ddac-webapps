@@ -34,7 +34,7 @@
 		<div id="header">
 				
 
-	            <div class="top-bar dashboard-top-bar">
+	            <div class="top-bar dashboard-top-bar" style="width:100%;z-index:999">
 	                <div class="top-bar-title">
 	                  <span data-responsive-toggle="responsive-menu" data-hide-for="large">
 	                      <button class="menu-icon dark " type="button" data-toggle="offCanvas" ></button>

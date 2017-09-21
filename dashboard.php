@@ -36,7 +36,7 @@
 		<div id="header">
 				
 			<div data-sticky-container>
-	            <div class="top-bar dashboard-top-bar" data-sticky data-options="marginTop:0;" style="width:100%">
+	            <div class="top-bar dashboard-top-bar" data-sticky data-options="marginTop:0;" style="width:100%;z-index:999">
 	                <div class="top-bar-title">
 	                  <span data-responsive-toggle="menu" data-hide-for="large">
 	                      <button class="menu-icon dark " type="button" data-toggle="offCanvas" ></button>

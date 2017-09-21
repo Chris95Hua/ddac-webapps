@@ -37,10 +37,10 @@ class Config {
 		* 1. Recommended to use utf8mb4 for database charset,
 		* 	 as php do not support utf8 fully.
 		*/
-		'db_host' => '127.0.0.1',
-		'db_username' => 'root',
-		'db_password' => '',
-		'db_name' => 'uia_app',
+		'db_host' => 'ap-cdbr-azure-southeast-b.cloudapp.net',
+		'db_username' => 'b53d1cd3aa407e',
+		'db_password' => '3641bc08',
+		'db_name' => 'acsm_ffd0fbc07265879',
 		'db_charset' => 'utf8mb4',
 
 		/**
