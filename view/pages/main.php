@@ -1,22 +1,7 @@
 <!-- Content start -->
 <div id="content">
 
-	<div class="off-canvas position-left reveal-for-large dashboard-off-canvas is-transition-push" id="offCanvas" data-off-canvas="true" aria-hidden="false">
-		<ul class="menu vertical">
-			<li class="active">
-				<a href="#">
-					<i class="fi-results"></i>
-					<span>Booking</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class="fi-plus"></i>
-					<span>New</span>
-				</a>
-			</li>
-		</ul>
-	</div>
+	<?php require_once('/view/components/sidebar.php'); ?>
 
 	<div class="off-canvas-content" data-off-canvas-content="true" style="height: 100%; overflow-y: auto;">
 		<div class="row" style="padding-top: 15px">
@@ -60,9 +45,9 @@
     });
 
     $('#page-selection').bootpag({
-        total: <?php echo Config::get('max_booking_display'); ?>,
+        total: <?php echo ceil($booking->getUserBookingCount($_SESSION['ID']) / Config::get('max_booking_display')); ?>,
         page: 1,
-        maxVisible: 5,
+        maxVisible: <?php echo Config::get('max_booking_display'); ?>,
         leaps: false,
         first: '&laquo;',
         last: '&raquo;',

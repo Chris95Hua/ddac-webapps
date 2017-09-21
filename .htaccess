@@ -1,20 +1,10 @@
 #URL Cleaning
 RewriteEngine On
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{THE_REQUEST} \s(.+?)/+[?\s]
-RewriteRule ^([^/]+)/?$ $1 [R=302,L]
-
 #Rewrite request (page only)
-RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^/]+)/?$ index.php?page=$1 [L]
-
-#Rewrite request (page and view)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^/]+)/([^/]+)/(.*)/?$ index.php?page=$1&$2=$3  [L]
+RewriteRule ^([^/]+)/?$ $1.php?page=$2 [L,QSA]
 
 
 #Disallow viewing of htaccess files

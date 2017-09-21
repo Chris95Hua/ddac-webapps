@@ -11,22 +11,7 @@ $airports = $booking->getAirports(false);
 <!-- Content start -->
 <div id="content" style="height:calc(100% - 56px); ">
 
-	<div class="off-canvas position-left reveal-for-large dashboard-off-canvas is-transition-push" id="offCanvas" data-off-canvas="true" aria-hidden="false">
-		<ul class="menu vertical">
-			<li class="active">
-				<a href="#">
-					<i class="fi-results"></i>
-					<span>Booking</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class="fi-plus"></i>
-					<span>New</span>
-				</a>
-			</li>
-		</ul>
-	</div>
+	<?php require_once('/view/components/sidebar.php'); ?>
 
 	<div class="off-canvas-content" data-off-canvas-content="true">
 
@@ -168,7 +153,7 @@ function repopulateAirport(sel, toUpdate){
         dateCmb.remove(i);
     }
 
-    originSelected ? populateDates(oriCmb, desCmb) : populateDates(desCmb, oriCmb);
+    populateDates(oriCmb, desCmb);
 
 	$('#loading').foundation('close');
 }

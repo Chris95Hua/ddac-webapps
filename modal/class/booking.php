@@ -65,7 +65,6 @@ class Booking {
 	* @return array(array(assoc))        List of users
 	*/
 	public function getFlightBookedSeats($flightID) {
-		// WHERE booking.flight_id = 3
 		$query = "SELECT " . self::SEAT_TABLE . "." . self::COL_SEAT . " FROM " . self::SEAT_TABLE;
 		$query .= " INNER JOIN " . self::BOOKING_TABLE . " ON ";
 		$query .= self::SEAT_TABLE . "." . self::COL_BOOKING_ID . "=" . self::BOOKING_TABLE . "." . self::COL_BOOKING_ID;
@@ -85,6 +84,7 @@ class Booking {
 		$length = strlen($string);
 		$output[0] = substr($string, 0, $num);
 		$output[1] = substr($string, $num, $length );
+
 		return "'" . $output[0] . "_" . $output[1] . "'";
 	}
 
@@ -100,6 +100,7 @@ class Booking {
 		$query .= " INNER JOIN " . self::ROUTE_TABLE;
 		$query .= " ON " . self::FLIGHT_TABLE . "." . self::COL_ROUTE . "=" . self::ROUTE_TABLE . "." . self::COL_ROUTE;
 		$query .= " WHERE " . self::COL_FLIGHT_ID . " = {$flightID}";
+
 		return $this->_db->query($query, array($flightID => $flightID))->fetch();
 	}
 
@@ -115,58 +116,68 @@ class Booking {
 		return $this->_db->query("SELECT " . self::COL_FLIGHT_ID . "," . self::COL_DEPARTURE . " FROM " . self::FLIGHT_TABLE . " WHERE " . self::COL_ROUTE . " = {$routeID} AND " . self::COL_DEPARTURE . " >= CURDATE()")->fetchAll();
 	}
 
-	/**
-	* Get all users
-	*
-	* @param boolean        $asc         Order of list, ASC if true (optional)
-	* @return array(array(assoc))        List of users
-	*/
-
-/*
-
-SELECT flight.flight_id,
-	   booking.booking_id,
-       booking.date_booked,
-       route.source,
-       route.destination,
-       flight.departure
-       FROM booking
-       INNER JOIN flight ON booking.flight_id = flight.flight_id
-       INNER JOIN booked_seat ON booking.booking_id = booked_seat.booking_id
-       INNER JOIN price ON flight.price_id = price.price_id
-       INNER JOIN route ON flight.route_id = route.route_id
-       INNER JOIN airport AS src ON route.source = src.iata_code
-       INNER JOIN airport As des ON route.destination = des.iata_code
-       WHERE booking.user_id = 1 GROUP BY booking.booking_id ORDER BY booking.date_booked DESC; 
-
-*/
-
-
 	public function getAllUserBookings($userID, $returnCount, $offset) {
+		$query = "SELECT " . self::FLIGHT_TABLE . "." . self::COL_FLIGHT_ID . ", ";
+		$query .= self::BOOKING_TABLE . "." . self::COL_BOOKING_ID . ", ";
+		$query .= self::BOOKING_TABLE . "." . self::COL_DATE_BOOKED . ", ";
+		$query .= self::ROUTE_TABLE . "." . self::COL_SOURCE . ", ";
+		$query .= self::ROUTE_TABLE . "." . self::COL_DESTINATION . ", ";
+		$query .= self::FLIGHT_TABLE . "." . self::COL_DEPARTURE . " FROM " . self::BOOKING_TABLE;
+		$query .= " INNER JOIN " . self::FLIGHT_TABLE;
+		$query .= " ON " . self::BOOKING_TABLE . "." . self::COL_FLIGHT_ID . "=" . self::FLIGHT_TABLE . "." . self::COL_FLIGHT_ID;
+		$query .= " INNER JOIN " . self::ROUTE_TABLE;
+		$query .= " ON " . self::FLIGHT_TABLE . "." . self::COL_ROUTE . "=" . self::ROUTE_TABLE . "." . self::COL_ROUTE;
+		$query .= " INNER JOIN " . self::AIRPORT_TABLE . " AS src";
+		$query .= " ON " . self::ROUTE_TABLE . "." . self::COL_SOURCE . "=src." . self::COL_IATA;
+		$query .= " INNER JOIN " . self::AIRPORT_TABLE . " AS des";
+		$query .= " ON " . self::ROUTE_TABLE . "." . self::COL_DESTINATION . "=des." . self::COL_IATA;
+		$query .= " WHERE " . self::BOOKING_TABLE . "." . self::COL_USER_ID . "={$userID}";
+		$query .= " GROUP BY " . self::BOOKING_TABLE . "." . self::COL_BOOKING_ID;
+		$query .= " ORDER BY " . self::BOOKING_TABLE . "." . self::COL_DATE_BOOKED . " DESC";
+		$query .= " LIMIT {$returnCount} OFFSET {$offset}";
 
+		return $this->_db->query($query, array($userID, $returnCount, $offset))->fetchAll();
 	}
 
-/*
-
-SELECT price.economy,
-		price.business,
-        price.first_class,
-        flight.departure,
-        route.source,
-        route.destination
-FROM booking
-INNER JOIN flight ON booking.flight_id = flight.flight_id
-INNER JOIN price ON price.price_id = flight.price_id
-INNER JOIN route ON route.route_id = flight.route_id WHERE booking.booking_id = 26
-
-*/
-
 	public function getUserBooking($bookingID) {
+		$query = "SELECT " . self::PRICE_TABLE . "." . self::COL_ECONOMY . ", ";
+		$query .= self::PRICE_TABLE . "." . self::COL_BUSINESS . ", ";
+		$query .= self::PRICE_TABLE . "." . self::COL_FIRST . ", ";
+		$query .= self::FLIGHT_TABLE . "." . self::COL_DEPARTURE . ", ";
+		$query .= self::ROUTE_TABLE . "." . self::COL_SOURCE . ", ";
+		$query .= self::ROUTE_TABLE . "." . self::COL_DESTINATION . " FROM " . self::BOOKING_TABLE;
+		$query .= " INNER JOIN " . self::FLIGHT_TABLE;
+		$query .= " ON " . self::BOOKING_TABLE . "." . self::COL_FLIGHT_ID . "=" . self::FLIGHT_TABLE . "." . self::COL_FLIGHT_ID;
+		$query .= " INNER JOIN " . self::PRICE_TABLE;
+		$query .= " ON " . self::PRICE_TABLE . "." . self::COL_PRICE . "=" . self::FLIGHT_TABLE . "." . self::COL_PRICE;
+		$query .= " INNER JOIN " . self::ROUTE_TABLE;
+		$query .= " ON " . self::FLIGHT_TABLE . "." . self::COL_ROUTE . "=" . self::ROUTE_TABLE . "." . self::COL_ROUTE;
+		$query .= " WHERE " . self::COL_BOOKING_ID . " = {$bookingID}";
 
+		return $this->_db->query($query, array($bookingID => $bookingID))->fetch();
+	}
+
+	public function getUserBookingCount($userID) {
+		$query = "SELECT COUNT(*) AS bookingCount FROM " . self::BOOKING_TABLE;
+		$query .= " WHERE " . self::COL_USER_ID . " = {$userID}";
+
+		return $this->_db->query($query, array($userID => $userID))->fetch()['bookingCount'];
 	}
 
 	public function getBookedSeats($bookingID) {
+		$query = "SELECT " . self::SEAT_TABLE . "." . self::COL_SEAT . " FROM " . self::SEAT_TABLE;
+		$query .= " INNER JOIN " . self::BOOKING_TABLE . " ON ";
+		$query .= self::SEAT_TABLE . "." . self::COL_BOOKING_ID . "=" . self::BOOKING_TABLE . "." . self::COL_BOOKING_ID;
+		$query .= " WHERE " . self::BOOKING_TABLE . "." . self::COL_BOOKING_ID . "={$bookingID}";
 
+		$results = $this->_db->query($query, array($bookingID => $bookingID))->fetchAll();
+
+		$formatted = array();
+		foreach($results as $seat) {
+			$formatted[] = self::formatSeat($seat[self::COL_SEAT], 1);
+		}
+
+		return $formatted;
 	}
 
 

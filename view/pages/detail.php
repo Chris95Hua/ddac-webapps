@@ -2,8 +2,11 @@
 
 $error = -1;
 
-if(Input::get('booking')) {
+if(Input::get('id')) {
 	// find route/booking stuff
+	$flight = $booking->getUserBooking(Input::get('id'));
+	$seats = $booking->getBookedSeats(Input::get('id'));
+
 }
 else {
 	header('Location: dashboard.php?page=main');
@@ -14,22 +17,7 @@ else {
 <!-- Content start -->
 <div id="content" style="height:calc(100% - 56px); ">
 
-	<div class="off-canvas position-left reveal-for-large dashboard-off-canvas is-transition-push" id="offCanvas" data-off-canvas="true" aria-hidden="false">
-		<ul class="menu vertical">
-			<li class="active">
-				<a href="#">
-					<i class="fi-results"></i>
-					<span>Booking</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class="fi-plus"></i>
-					<span>New</span>
-				</a>
-			</li>
-		</ul>
-	</div>
+	<?php require_once('/view/components/sidebar.php'); ?>
 
 	<div class="off-canvas-content" data-off-canvas-content="true">
 		<div class="full-width" style="height:100%">
@@ -47,54 +35,25 @@ else {
 
 			</div>
 
-			<div class="small-12 medium-4 columns" style="padding: 0; height: 100%; overflow-y: auto">
+			<div class="small-12 medium-4 columns" style="padding: 0; height: 100%; overflow-y: auto; background-color:white; border-left:1px solid #e6e6e6">
 
-				<form method="post" action="" accept-charset="UTF-8">
-					<div class="row columns" style="padding: 0px;">
-						<div class="row columns" style="padding: 15px;">
-							<h3><i class="fi-plus"></i> Booking Details</h3>
-						</div>
-
-                        <ul class="accordion" data-accordion="true" data-multi-expand="true" data-allow-all-closed="true">
-                            <li class="accordion-item is-active" data-accordion-item="true">
-                              <a href="#" class="accordion-title">Booking info</a>
-                              <div class="accordion-content" data-tab-content="true">
-
-                                  <div class="row">
-                                      <div class="small-12 columns">
-                                          <ul class="vertical-detail">
-                                              <li><span>Origin</span>[origin]</li>
-                                              <li><span>Destination</span>[destination]</li>
-                                              <li><span>Departure</span>[datetime]</li>
-                                          </ul>
-                                      </div>
-                                  </div>
-
-                              </div>
-                            </li>
-
-                            <li class="accordion-item is-active" data-accordion-item="true">
-                              <a href="#" class="accordion-title">Seats (<span id="counter">0</span>)</a>
-                              <div class="accordion-content" data-tab-content="true">
-
-                                  <div class="row">
-                                      <div class="small-12 columns">
-										<ul id="selected-seats"></ul>
-										<h5 style="margin-bottom:0px">Total: <b>$<span id="total">0</span></b></h5>
-
-                                      </div>
-                                  </div>
-
-                              </div>
-                            </li>
-                        </ul>
-
-						<div class="small-12 columns">
-							<button type="submit" id="post" class="button expanded" disabled>Confirm</button>
-						</div>	
-
+				<div class="row columns" style="padding: 0px;">
+					<div class="row columns" style="padding: 15px;">
+						<h3><i class="fi-plus"></i> Booking Details</h3>
 					</div>
-				</form>
+
+                  <div class="row columns">
+                      <div class="small-12 columns">
+                          <ul class="vertical-detail">
+                              <li><span>Origin</span><?php echo $flight[Booking::COL_SOURCE]; ?></li>
+                              <li><span>Destination</span><?php echo $flight[Booking::COL_DESTINATION]; ?></li>
+                              <li><span>Departure</span><?php echo $flight[Booking::COL_DEPARTURE]; ?></li>
+                              <li><span>Total (RM)</span><p id="total">0</p></li>
+                          </ul>
+                      </div>
+                  </div>
+
+				</div>
 
 			</div>
 
@@ -110,65 +69,76 @@ else {
 <!-- Foundation -->
 <script src="js/foundation.min.js"></script>
 <script src="js/app.js"></script>
-<script src="js/foundation-datepicker.min.js"></script>
-<script src="js/jquery.autocomplete.min.js"></script>
-<script src="js/jquery.seat-charts.min.js"></script>
+<script src="js/jquery.seat-charts-static.min.js"></script>
 <script>
 
 // seats
 var firstSeatLabel = 1;
-
+var sc;
 $(document).ready(function() {
 	var $cart = $('#selected-seats'),
 		$counter = $('#counter'),
 		$total = $('#total'),
-		sc = $('#seat-map').seatCharts({
+		$sel = $('#selSeat');
+	sc = $('#seat-map').seatCharts({
 		map: [
 			'fff_fff',
 			'fff_fff',
+			'bbb_bbb',
 			'eee_eee',
 			'eee_eee',
 			'eee___',
 			'eee_eee',
 			'eee_eee',
 			'eee_eee',
-			'eeee',
+			'eee_eee',
 		],
 		seats: {
 			f: {
-				price   : 100,
+				price   : <?php echo $flight[BOOKING::COL_FIRST]; ?>,
 				classes : 'first-class',
-				category: 'First Class'
+				category: 'First Class',
+				type	: 'f'
+			},
+			b: {
+				price   : <?php echo $flight[BOOKING::COL_BUSINESS]; ?>,
+				classes : 'business-class',
+				category: 'Business Class',
+				type	: 'b'
 			},
 			e: {
-				price   : 40,
+				price   : <?php echo $flight[BOOKING::COL_ECONOMY]; ?>,
 				classes : 'economy-class',
-				category: 'Economy Class'
+				category: 'Economy Class',
+				type	: 'e'
 			}					
 		
 		},
 		naming : {
 			top : false,
+			rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
 			getLabel : function (character, row, column) {
-				return firstSeatLabel++;
+				return row + column;
 			},
 		},
 		legend : {
 			node : $('#legend'),
 		    items : [
-				[ 'f', 'available',   'First Class' ],
+				[ 'f', 'available',   'First Class'],
+				[ 'b', 'available',   'Business Class'],
 				[ 'e', 'available',   'Economy Class'],
-				[ 'f', 'unavailable', 'Already Booked']
+				[ 'f', 'selected', 'Booked Seats']
 		    ]					
 		},
 		click: function () {
 			if (this.status() == 'available') {
 				//let's create a new <li> which we'll add to the cart items
-				$('<li>'+this.data().category+' Seat #'+this.settings.label+': <b>$'+this.data().price+'</b> <a href="javascript:void(0)" class="cancel-cart-item">[cancel]</a></li>')
+				console.log(this.data().type);
+				$('<li>'+this.data().category+' Seat #<input type="checkbox" name="seats[]" style="display: none" value="'+this.settings.label+':'+this.data().type+'" checked/>'+this.settings.label+': <b>$'+this.data().price+'</b> <a href="javascript:void(0)" class="cancel-cart-item">[cancel]</a></li>')
 					.attr('id', 'cart-item-'+this.settings.id)
 					.data('seatId', this.settings.id)
 					.appendTo($cart);
-					
+
 				var selTotal = sc.find('selected').length+1;
 				$counter.text(selTotal);
 				$("#post").attr("disabled", (selTotal == 0));
@@ -206,18 +176,18 @@ $(document).ready(function() {
 	});
 
 	//let's pretend some seats have already been booked
-	sc.get(['1_2', '4_1', '7_1', '7_2']).status('unavailable');
+	sc.get([<?php echo implode(", ",$seats); ?>]).status('selected');
 
+	//console.log(sc.get('E_6').data().type);
+	$total.text(recalculateTotal(sc));
 });
 
 function recalculateTotal(sc) {
 	var total = 0;
-	var count = 0;
 
 	//basically find every selected seat and sum its price
 	sc.find('selected').each(function () {
 		total += this.data().price;
-		count++;
 	});
 
 	return total;
