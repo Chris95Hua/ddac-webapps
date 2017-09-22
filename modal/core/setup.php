@@ -38,9 +38,9 @@ $page = Page::getInstance();
 $user = new User();
 
 // region settings
-$region = "US";
+$region = "Asia";
 if(!isset($_SESSION['currency'])){
-	$_SESSION['currency'] = "USD";
+	$_SESSION['currency'] = "MYR";
 }
 if(!isset($rate)) {
 	$rate = MySQLConn::getInstance()->select("currency", array("rate"), array("code", '=', $_SESSION['currency']), "LIMIT 1")->fetch()['rate'];
