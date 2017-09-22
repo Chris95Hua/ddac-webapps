@@ -5,5 +5,4 @@ $user->logout();
 
 session_destroy();
 
-header('Location: /TCS/'.Config::get('home'));
-exit();
+header('Location: ../index.php');

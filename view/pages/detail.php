@@ -35,7 +35,7 @@ else {
 
 			</div>
 
-			<div class="small-12 medium-4 columns" style="padding: 0; height: 100%; overflow-y: auto; background-color:white; border-left:1px solid #e6e6e6">
+			<div class="small-12 medium-4 columns" style="padding: 0; height: 100%; overflow-y: auto;">
 
 				<div class="row columns" style="padding: 0px;">
 					<div class="row columns" style="padding: 15px;">
@@ -48,7 +48,7 @@ else {
                               <li><span>Origin</span><?php echo $flight[Booking::COL_SOURCE]; ?></li>
                               <li><span>Destination</span><?php echo $flight[Booking::COL_DESTINATION]; ?></li>
                               <li><span>Departure</span><?php echo $flight[Booking::COL_DEPARTURE]; ?></li>
-                              <li><span>Total (RM)</span><p id="total">0</p></li>
+                              <li><span>Total (<?php echo $_SESSION['currency'] ?>)</span><p id="total">0</p></li>
                           </ul>
                       </div>
                   </div>
@@ -95,19 +95,19 @@ $(document).ready(function() {
 		],
 		seats: {
 			f: {
-				price   : <?php echo $flight[BOOKING::COL_FIRST]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_FIRST] * $rate; ?>,
 				classes : 'first-class',
 				category: 'First Class',
 				type	: 'f'
 			},
 			b: {
-				price   : <?php echo $flight[BOOKING::COL_BUSINESS]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_BUSINESS] * $rate; ?>,
 				classes : 'business-class',
 				category: 'Business Class',
 				type	: 'b'
 			},
 			e: {
-				price   : <?php echo $flight[BOOKING::COL_ECONOMY]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_ECONOMY] * $rate; ?>,
 				classes : 'economy-class',
 				category: 'Economy Class',
 				type	: 'e'

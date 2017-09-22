@@ -4,8 +4,9 @@ RewriteEngine On
 #Rewrite request (page only)
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^/]+)/?$ $1.php?page=$2 [L,QSA]
+RewriteRule ^(.*)/?$ $1.php?page=$2 [L,QSA]
 
+RewriteRule ^([^/.]+)$ $1.php [L]
 
 #Disallow viewing of htaccess files
 <Files .htaccess>

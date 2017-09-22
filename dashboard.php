@@ -1,6 +1,11 @@
 <?php
 	require_once ('/modal/core/setup.php');
 	
+	if(Input::exist() && isset($_POST['currency'])) {		
+		$_SESSION['currency'] = Input::get('currency');
+		$rate = MySQLConn::getInstance()->select("currency", array("rate"), array("code", '=', $_SESSION['currency']), "LIMIT 1")->fetch()['rate'];
+	}
+
 	$booking = Booking::getInstance();
 
 	// validate current page exists and user has permission to view it
@@ -50,27 +55,28 @@
 	                
 	                <div id="responsive-menu">
 	                    <div class="top-bar-left">
-							<a href="home"><img style="height:2.5rem" src="img/uia-full-logo.png" /></a>
+							<a href="index.php"><img style="height:2.5rem" src="img/uia-full-logo.png" /></a>
 	                    </div>
-	                    
+	                    <form method="post" action="" accept-charset="UTF-8">
 	                    <div class="top-bar-right">
 						    <ul class="dropdown menu" data-dropdown-menu>
 								<li>
-									<a href="#">Currency/Region</a>
+									<a href="#"><?php echo $region . "/" . $_SESSION['currency'] ?></a>
 									<ul class="menu vertical">
-										<li><a href="#">One</a></li>
-										<li><a href="#">Two</a></li>
-										<li><a href="#">Three</a></li>
+										<li><button name="currency" type="submit" value="USD">USD</button></li>
+										<li><button name="currency" type="submit" value="RUB">RUB</button></li>
+										<li><button name="currency" type="submit" value="MYR">MYR</button></li>
 									</ul>
 								</li>
 								<li>
-									<a href="#">Name</a>
+									<a href="#"><?php echo $_SESSION['name']; ?></a>
 									<ul class="menu vertical">
-										<li><a href="#">Logout</a></li>
+										<li><a href="controller/logout.php">Logout</a></li>
 									</ul>
 								</li>
 						    </ul>
 	                    </div>
+	                    </form>
 	                </div>
 	            </div>
 			</div>

@@ -30,11 +30,21 @@ spl_autoload_register(function($class) {
 });
 
 // setup configs
-Config::init();
+//Config::init();
+Config::loadConfig("https://uiaconfig.blob.core.windows.net/config/uia_config.ini");
  
 // Load basic classes
 $page = Page::getInstance();
-$user = User::getInstance();
+$user = new User();
+
+// region settings
+$region = "Global";
+if(!isset($_SESSION['currency'])){
+	$_SESSION['currency'] = "USD";
+}
+if(!isset($rate)) {
+	$rate = MySQLConn::getInstance()->select("currency", array("rate"), array("code", '=', $_SESSION['currency']), "LIMIT 1")->fetch()['rate'];
+}
  
 // Auto login if cookie was found
 if(Cookie::exist(Config::get('cookie_name')) && !isset($_SESSION['ID'])) {

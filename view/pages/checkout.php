@@ -98,7 +98,7 @@ if(Input::exist() && isset($_POST['confirm'])) {
 					</div>
 					
 					<div class="row columns">
-						<h4 class="float-right strong">Total: <strong>RM<?php echo $price; ?></strong></h4>
+						<h4 class="float-right strong">Total (<?php echo $_SESSION['currency']; ?>): <strong><?php echo $price * $rate; ?></strong></h4>
 					</div>
 				</div>
 			</div>

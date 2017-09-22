@@ -80,10 +80,10 @@ Ways to reduce database transaction/calls
 
 			switch ($this->_data[Page::COL_ID]) {
 			    case -1:
-			        header('Location: ' . BASE_URL . '/portal.php?page=err403');
+			        header('Location: portal.php?page=err403');
 			        break;
 			    case -2:
-			        header('Location: ' . BASE_URL . '/portal.php?page=err404');
+			        header('Location: portal.php?page=err404');
 			        break;
 			}
 

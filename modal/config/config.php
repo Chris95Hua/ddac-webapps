@@ -142,12 +142,19 @@ class Config {
 	* Return value
 	*/
 	public static function get($param) {
+		/*
 		if (self::$config['file_operation']) {
 			self::$config = File::validateConf(self::$config, $param);
 		}
+		*/
 		
 		if(isset(self::$config[$param])) {
 			return self::$config[$param];
 		}
+	}
+
+	public static function loadConfig($url) {
+		$ini = file_get_contents($url);
+		$config = parse_ini_string($ini);
 	}
 }

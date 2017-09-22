@@ -59,12 +59,12 @@ if(Input::exist() && isset($_POST['confirm'])) {
 				<form method="post" action="" accept-charset="UTF-8">
 					<div class="row columns" style="padding: 0px;">
 						<div class="row columns" style="padding: 15px;">
-							<h3><i class="fi-plus"></i> Booking Details</h3>
+							<h3><i class="fi-plus"></i> New Booking</h3>
 						</div>
 
                         <ul class="accordion" data-accordion="true" data-multi-expand="true" data-allow-all-closed="true">
                             <li class="accordion-item is-active" data-accordion-item="true">
-                              <a href="#" class="accordion-title">Booking info</a>
+                              <a href="#" class="accordion-title">Flight</a>
                               <div class="accordion-content" data-tab-content="true">
 
                                   <div class="row">
@@ -89,7 +89,7 @@ if(Input::exist() && isset($_POST['confirm'])) {
                                   <div class="row">
                                       <div class="small-12 columns">
 										<ul id="selected-seats"></ul>
-										<h5 style="margin-bottom:0px">Total: <b>$<span id="total">0</span></b></h5>
+										<h5 style="margin-bottom:0px">Total (<?php echo $_SESSION['currency']; ?>): <b><span id="total">0</span></b></h5>
 
                                       </div>
                                   </div>
@@ -147,19 +147,19 @@ $(document).ready(function() {
 		],
 		seats: {
 			f: {
-				price   : <?php echo $flight[BOOKING::COL_FIRST]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_FIRST] * $rate; ?>,
 				classes : 'first-class',
 				category: 'First Class',
 				type	: 'f'
 			},
 			b: {
-				price   : <?php echo $flight[BOOKING::COL_BUSINESS]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_BUSINESS] * $rate; ?>,
 				classes : 'business-class',
 				category: 'Business Class',
 				type	: 'b'
 			},
 			e: {
-				price   : <?php echo $flight[BOOKING::COL_ECONOMY]; ?>,
+				price   : <?php echo $flight[BOOKING::COL_ECONOMY] * $rate; ?>,
 				classes : 'economy-class',
 				category: 'Economy Class',
 				type	: 'e'
@@ -186,7 +186,7 @@ $(document).ready(function() {
 			if (this.status() == 'available') {
 				//let's create a new <li> which we'll add to the cart items
 				console.log(this.data().type);
-				$('<li>'+this.data().category+' Seat #<input type="checkbox" name="seats[]" style="display: none" value="'+this.settings.label+':'+this.data().type+'" checked/>'+this.settings.label+': <b>$'+this.data().price+'</b> <a href="javascript:void(0)" class="cancel-cart-item">[cancel]</a></li>')
+				$('<li>'+this.data().category+' Seat #<input type="checkbox" name="seats[]" style="display: none" value="'+this.settings.label+':'+this.data().type+'" checked/>'+this.settings.label+': <b>'+<?php echo "'".$_SESSION['currency']."'"; ?>+this.data().price+'</b> <a href="javascript:void(0)" class="cancel-cart-item">[cancel]</a></li>')
 					.attr('id', 'cart-item-'+this.settings.id)
 					.data('seatId', this.settings.id)
 					.appendTo($cart);

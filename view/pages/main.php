@@ -12,7 +12,7 @@
 						<i class="fi-info"></i>
 						 Booking History
 					</h4>
-					<a href="#" class="button float-right">
+					<a href="dashboard.php?page=search" class="button float-right">
 						<i class="fi-plus"></i>
 						 New
 					</a>

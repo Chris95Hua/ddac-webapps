@@ -234,6 +234,19 @@ class Booking {
 		$this->_db->delete(self::BOOKING_TABLE, array(self::COL_BOOKING_ID, '=', $id));
 	}
 
+	public function getTopFlight($limit = 10) {
+		$query = "SELECT " . self::ROUTE_TABLE . "." . self::COL_SOURCE . ", ";
+		$query .= self::ROUTE_TABLE . "." . self::COL_DESTINATION . ", ";
+		$query .= self::PRICE_TABLE . "." . self::COL_ECONOMY . " FROM " . self::FLIGHT_TABLE;
+		$query .= " INNER JOIN " . self::ROUTE_TABLE . " ON ";
+		$query .= self::FLIGHT_TABLE . "." . self::COL_ROUTE . "=" . self::ROUTE_TABLE . "." . self::COL_ROUTE;
+		$query .= " INNER JOIN " . self::PRICE_TABLE . " ON ";
+		$query .= self::PRICE_TABLE . "." . self::COL_PRICE . "=" . self::FLIGHT_TABLE . "." . self::COL_PRICE;
+		$query .= " GROUP BY " . self::PRICE_TABLE . "." . self::COL_ECONOMY . " LIMIT {$limit}";
+
+		return $this->_db->query($query, array($limit => $limit))->fetchAll();
+	}
+
 
 	/**
 	* Check if user exists

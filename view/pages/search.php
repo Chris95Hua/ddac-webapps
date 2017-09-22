@@ -24,7 +24,7 @@ $airports = $booking->getAirports(false);
 			<form method="post" action="" accept-charset="UTF-8">
 					<div class="row column">
 						<div class="small-12 columns" style="padding-top: 15px; padding-bottom: 15px">
-							<h3><i class="fi-plus"></i> Book flight</h3>
+							<h3><i class="fi-magnifying-glass"></i> Search flight</h3>
 						</div>
 
 						<div class="medium-6 medium-centered large-4 large-centered columns">
@@ -104,6 +104,9 @@ function populateDates(origin, destination) {
 	var oriVal = origin.options[origin.selectedIndex].value;
 	var desVal = destination.options[destination.selectedIndex].value;
 
+	$('#loading').foundation('open');
+	$("#departure").attr("disabled", true);
+
 	 $.ajax({
 		dataType: "json",
 		type: "GET",
@@ -119,11 +122,15 @@ function populateDates(origin, destination) {
 				// then append it to the select element
 				dateCmb.appendChild(opt);
 			}
+
+			$("#departure").attr("disabled", false);
 	 	},
         error: function (request, status, errorThrown) {
             alert(status);
         }
 	 });
+
+	 $('#loading').foundation('close');
 }
 
 function repopulateAirport(sel, toUpdate){
@@ -143,9 +150,6 @@ function repopulateAirport(sel, toUpdate){
     if(populateAirport(toUpdateCmb, sel, selectedVal)) {
     	toUpdateCmb.value = selectedVal;
     }
-	
-
-	$('#loading').foundation('open');
 
 	// remove and repopulate date
     for(i = dateCmb.options.length - 1 ; i >= 0 ; i--)
@@ -154,8 +158,6 @@ function repopulateAirport(sel, toUpdate){
     }
 
     populateDates(oriCmb, desCmb);
-
-	$('#loading').foundation('close');
 }
 
 

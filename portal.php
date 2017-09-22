@@ -33,7 +33,7 @@
 			<!-- Header start -->
 			<div id="header">
 				<div class="centralise component-padding" style="margin-top: 5px">
-					<a href="home"><img id="classic-top-logo" src="img/uia-full-logo.png" /></a>
+					<a href="index.php"><img id="classic-top-logo" src="img/uia-full-logo.png" /></a>
 				</div>
 			</div>
 			<!-- Header end -->

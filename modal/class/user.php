@@ -15,22 +15,14 @@ class User {
 	const COL_SESSION_ID = 'session_id';
 	const COL_HASH = 'hash';
 
-	private static $_instance = NULL;
 	private $_db, $_data;
 
 
 	/**
 	* Establish database connection
 	*/
-	protected function __construct() {
+	public function __construct() {
 		$this->_db = MySQLConn::getInstance();
-	}
-
-	public static function getInstance() {
-		if(self::$_instance === NULL)
-			self::$_instance = new User();
-
-		return self::$_instance;
 	}
 
 
@@ -47,6 +39,7 @@ class User {
 			if($this->_data[self::COL_PASSWORD] === Hash::make($password, $this->_data[self::COL_SALT])) {
 				$_SESSION['ID'] = $this->_data[self::COL_USER_ID];
 				$_SESSION['role'] = $this->_data[self::COL_ROLE_ID];
+				$_SESSION['name'] = $this->_data[self::COL_NAME];
 
 				if($remember) {
 					$hashCheck = $this->_db->select(self::SESSION_TABLE, array(self::COL_USER_ID, '=', $_SESSION['ID']));
@@ -82,6 +75,7 @@ class User {
 	public function logout() {
 		$this->_db->delete(self::SESSION_TABLE, array(self::COL_USER_ID,'=',$this->_data[self::COL_USER_ID]));
 		$this->_data = null;
+		
 		Cookie::delete(Config::get('cookie_name'));
 	}
 
