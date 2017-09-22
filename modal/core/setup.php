@@ -38,9 +38,9 @@ $page = Page::getInstance();
 $user = new User();
 
 // region settings
-$region = "Asia";
+$region = "Global";
 if(!isset($_SESSION['currency'])){
-	$_SESSION['currency'] = "MYR";
+	$_SESSION['currency'] = "USD";
 }
 if(!isset($rate)) {
 	$rate = MySQLConn::getInstance()->select("currency", array("rate"), array("code", '=', $_SESSION['currency']), "LIMIT 1")->fetch()['rate'];
@@ -49,11 +49,20 @@ if(!isset($rate)) {
 // Auto login if cookie was found
 if(Cookie::exist(Config::get('cookie_name')) && !isset($_SESSION['ID'])) {
 	$hash = Cookie::get(Config::get('cookie_name'));
-	$hashCheck = MySQLConn::getInstance()->select(User::SESSION_TABLE, array(), array(User::COL_HASH, '=', $hash), "LIMIT 1");
+	$hashCheck = MySQLConn::getInstance()->select(User::SESSION_TABLE, array(), array(User::COL_HASH, '=', $hash), "LIMIT 1")->fetch();
 
-	if($hashCheck->count()) {
-		$user->find($hashCheck->data()[User::COL_USER_ID], true);
-		$user->login($user->data()[User::COL_EMAIL],$user->data()[User::COL_PASSWORD], true);
+	if($hashCheck) {
+		$account = MySQLConn::getInstance()->select(User::USER_TABLE, array(), array(User::COL_USER_ID, '=', $hashCheck[User::COL_USER_ID]), "LIMIT 1")->fetch();
+
+		if($account) {
+			$_SESSION['ID'] = $account[User::COL_USER_ID];
+			$_SESSION['role'] = $account[User::COL_ROLE_ID];
+			$_SESSION['name'] = $account[User::COL_NAME];
+			header('Location: dashboard.php?page=main');
+		}
+		else {
+			MySQLConn::getInstance()->delete(User::SESSION_TABLE, array(User::COL_HASH, '=', $hash));
+		}
 	}
 }
 

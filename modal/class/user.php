@@ -42,7 +42,7 @@ class User {
 				$_SESSION['name'] = $this->_data[self::COL_NAME];
 
 				if($remember) {
-					$hashCheck = $this->_db->select(self::SESSION_TABLE, array(self::COL_USER_ID, '=', $_SESSION['ID']));
+					$hashCheck = $this->_db->select(self::SESSION_TABLE, array(), array(self::COL_USER_ID, '=', $_SESSION['ID']));
 
 					if(!$hashCheck->count()) {
 						$hash = Hash::unique();
@@ -68,6 +68,16 @@ class User {
 		return 2;
 	}
 
+	public function isEmailUnique($email) {
+		$user = $this->_db->select(self::USER_TABLE, array(), array(self::COL_EMAIL, '=', $email));
+
+		if($user->count()) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
 
 	/**
 	* Remove current user session
@@ -75,7 +85,7 @@ class User {
 	public function logout() {
 		$this->_db->delete(self::SESSION_TABLE, array(self::COL_USER_ID,'=',$this->_data[self::COL_USER_ID]));
 		$this->_data = null;
-		
+
 		Cookie::delete(Config::get('cookie_name'));
 	}
 
