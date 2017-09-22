@@ -4,28 +4,27 @@
 $error = -1;
 
 if(Input::exist()) {
-	$salt = Hash::salt(32);
+	if($user->isEmailUnique(Input::get('email'))) {
+		$salt = Hash::salt(32);
 
-	//create user
-	$account = array(
-			'role_id' => '2',
-			'full_name' => Input::get('fullName'),
-			'birth_date' => DateTime::createFromFormat('d/m/Y', Input::get('birthdate'))->format('Y-m-d'),
-			'email' => Input::get('email'),
-			'password' => Hash::make(Input::get('password'),$salt),
-			'date_joined' => date('Y-m-d H:i:s'),
-			'salt' => $salt
-		);
-					
-	try {
+		//create user
+		$account = array(
+				'role_id' => '2',
+				'full_name' => Input::get('fullName'),
+				'birth_date' => DateTime::createFromFormat('d/m/Y', Input::get('birthdate'))->format('Y-m-d'),
+				'email' => Input::get('email'),
+				'password' => Hash::make(Input::get('password'),$salt),
+				'date_joined' => date('Y-m-d H:i:s'),
+				'salt' => $salt
+			);
+						
 		$error = $user->create($account);
 	}
-	catch(Exception $e) {
-		die($e->getMessage());
+	else {
+		$error = 2;
 	}
 }
-// admin@uia.com
-// 123456
+
 ?>
 
 <!-- Content start -->
@@ -34,7 +33,15 @@ if(Input::exist()) {
 	<!-- View start -->
 	<div class="row">
 
-	<?php if($error == 1): ?>
+	<?php if($error == 2): ?>
+		<div class="alert callout" data-closable>
+			<h5>Email already exist</h5>
+			<p>Consider sign up with another email.</p>
+			<button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	<?php elseif($error == 1): ?>
 		<div class="alert callout" data-closable>
 			<h5>Account Creation Failed</h5>
 			<p>It appears that there is an issue when creating the account.</p>
