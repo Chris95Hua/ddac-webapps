@@ -38,7 +38,7 @@ $page = Page::getInstance();
 $user = new User();
 
 // region settings
-$region = "Global";
+$region = "Asia";
 if(!isset($_SESSION['currency'])){
 	$_SESSION['currency'] = "USD";
 }
