@@ -31,7 +31,10 @@ spl_autoload_register(function($class) {
 
 // setup configs
 //Config::init();
-Config::loadConfig("https://uiaconfig.blob.core.windows.net/config/uia_config.ini");
+if(!isset($_SESSION['config'])){
+	$_SESSION['config'] = true;
+	Config::loadConfig("https://uiaconfig.blob.core.windows.net/config/uia_config.ini");
+}
  
 // Load basic classes
 $page = Page::getInstance();
